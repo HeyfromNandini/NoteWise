@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     Screens.CreateNotes.route -> {
-                        isBottomBarVisible.value = true
+                        isBottomBarVisible.value = false
                     }
 
                     Screens.Search.route -> {

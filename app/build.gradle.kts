@@ -115,8 +115,9 @@ dependencies {
     // Swipe
     implementation("me.saket.swipe:swipe:1.2.0")
 
-    // Dialogs
-    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc05")
+
+    // Collapsing Toolbar
+    implementation("me.onebone:toolbar-compose:2.3.5")
 
 }
