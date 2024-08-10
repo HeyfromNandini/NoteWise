@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import project.app.notewise.domain.Screens
+import project.app.notewise.presentation.createNotes.CreateNoteScreen
 
 @Composable
 fun NavigationController(
@@ -24,9 +25,7 @@ fun NavigationController(
             }
         }
         composable(Screens.CreateNotes.route) {
-            Column {
-                Text("Create Notes")
-            }
+            CreateNoteScreen(paddingValues = paddingValues)
         }
         composable(Screens.AskAI.route) {
             Column {
