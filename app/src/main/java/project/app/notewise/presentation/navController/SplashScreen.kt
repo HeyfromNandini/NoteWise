@@ -51,6 +51,8 @@ fun SplashScreen(
 
             is SplashState.Error -> {
                 errorMessage = (state as SplashState.Error).message
+                navHostController.popBackStack()
+                navHostController.navigate(Login)
             }
 
             else -> {}
@@ -108,13 +110,13 @@ fun SplashScreen(
         ) {
             SplashItem(text = items[visibleIndex].first, icon = items[visibleIndex].second)
         }
-
-        ErrorHandler(
-            errorMessage = errorMessage,
-            onDismiss = { errorMessage = null },
-            coroutineScope = coroutineScope
-        )
     }
+
+    ErrorHandler(
+        errorMessage = errorMessage,
+        onDismiss = { errorMessage = null },
+        coroutineScope = coroutineScope
+    )
 }
 
 
