@@ -10,6 +10,8 @@ import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import project.app.notewise.data.ErrorResponse
+import project.app.notewise.data.createNote.CreateNoteRequest
 import project.app.notewise.data.login.SignInResponse
 import project.app.notewise.data.login.SignUpRequest
 import project.app.notewise.data.login.VerifyEmailRequest
@@ -68,7 +70,10 @@ class ApiServiceImpl(
         )
     }
 
-    override suspend fun aiChat(searchRequest: SearchRequest, idToken: String): Result<SearchResponse> {
+    override suspend fun aiChat(
+        searchRequest: SearchRequest,
+        idToken: String
+    ): Result<SearchResponse> {
         return authenticatedApiCall(
             apiCall = {
                 println("idToken is $idToken")
@@ -87,6 +92,28 @@ class ApiServiceImpl(
             idToken = idToken,
             onUnauthorized = {
 
+            }
+        )
+    }
+
+    override suspend fun createNote(
+        createNoteRequest: CreateNoteRequest,
+        idToken: String
+    ): Result<ErrorResponse> {
+        return safeApiCall(
+            apiCall = {
+                println("Is loading1 $idToken")
+                client.post {
+                    url("${Constants.API.BASE_URL}/createNote")
+                    header(HttpHeaders.ContentType, ContentType.Application.Json)
+                    setBody(createNoteRequest)
+                    headers {
+                        append("Authorization", "Bearer $idToken")
+                    }
+                }
+            },
+            parseResponse = {
+                it.body<ErrorResponse>()
             }
         )
     }

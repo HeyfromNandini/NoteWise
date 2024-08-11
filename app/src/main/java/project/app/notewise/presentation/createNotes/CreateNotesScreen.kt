@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,18 +38,19 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
+import project.app.notewise.data.createNote.CreateNoteRequest
 import project.app.notewise.domain.models.formattingIcons
 
 
 @Composable
-fun CreateNoteScreen(paddingValues: PaddingValues) {
-
-    var currentIcon by remember { mutableStateOf(formattingIcons[0]) }
-    var textState = rememberRichTextState()
-    var title by remember { mutableStateOf("") }
-    val isDescriptionFocused = remember { mutableStateOf(false) }
+fun CreateNoteScreen(
+    paddingValues: PaddingValues,
+    viewModel: CreateNotesViewModel
+) {
+    val textState = rememberRichTextState()
     val keyboardVisible by keyboardAsState()
     val state = rememberCollapsingToolbarScaffoldState()
+    val uid = viewModel.userId.collectAsState()
 
     CollapsingToolbarScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -68,8 +70,8 @@ fun CreateNoteScreen(paddingValues: PaddingValues) {
                         modifier = Modifier.size(24.dp)
                     )
                 }
-                NoteTitleField(noteTitle = title, onTitleChange = {
-                    title = it
+                NoteTitleField(noteTitle = viewModel.title, onTitleChange = {
+                    viewModel.title = it
                 }, modifier = Modifier.weight(1f))
 
                 Row(
@@ -78,7 +80,9 @@ fun CreateNoteScreen(paddingValues: PaddingValues) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        viewModel.isBottomSheetVisible.value = !viewModel.isBottomSheetVisible.value
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Save,
                             contentDescription = "Save",
@@ -103,10 +107,9 @@ fun CreateNoteScreen(paddingValues: PaddingValues) {
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 NoteDescriptionField(
-                    isFocused = isDescriptionFocused,
+                    isFocused = viewModel.isDescriptionFocused,
                     textState = textState
                 )
-
             }
             AnimatedVisibility(
                 keyboardVisible == Keyboard.Opened,
@@ -121,7 +124,7 @@ fun CreateNoteScreen(paddingValues: PaddingValues) {
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     AnimatedVisibility(
-                        isDescriptionFocused.value,
+                        viewModel.isDescriptionFocused.value,
                         enter = slideInHorizontally(initialOffsetX = { -it / 2 }) + fadeIn(),
                         exit = slideOutHorizontally(targetOffsetX = { it / 2 }) + fadeOut()
                     ) {
@@ -129,19 +132,19 @@ fun CreateNoteScreen(paddingValues: PaddingValues) {
                             items(formattingIcons) {
                                 IconButton(
                                     onClick = {
-                                        currentIcon = it
+                                        viewModel.currentIcon = it
                                         it.onClick(textState)
                                     },
                                     colors = IconButtonDefaults.iconButtonColors(
-                                        containerColor = if (it == currentIcon)
+                                        containerColor = if (it == viewModel.currentIcon)
                                             MaterialTheme.colorScheme.secondaryContainer else
                                             MaterialTheme.colorScheme.background
                                     )
                                 ) {
                                     Icon(
                                         imageVector = it.icon,
-                                        contentDescription = it.title,
-                                        tint = if (it == currentIcon)
+                                        contentDescription = "",
+                                        tint = if (it == viewModel.currentIcon)
                                             MaterialTheme.colorScheme.primary else
                                             MaterialTheme.colorScheme.onSurface
                                     )
@@ -151,6 +154,31 @@ fun CreateNoteScreen(paddingValues: PaddingValues) {
                     }
                 }
             }
+        }
+
+        if (viewModel.isBottomSheetVisible.value) {
+            SaveNoteBottomSheet(
+                onDismiss = {
+                    viewModel.isBottomSheetVisible.value = false
+                },
+                onSaveNote = { request ->
+                    println("Is loading3 called")
+                    viewModel.saveNote(
+                        CreateNoteRequest(
+                            author = request.author,
+                            content = textState.toMarkdown(),
+                            isEncrypted = false,
+                            priority = request.priority,
+                            title = request.title,
+                            category = request.category,
+                            timestamp = request.timestamp,
+                            uId = uid.value ?: "",
+                        )
+                    )
+                },
+                initialTitle = viewModel.title,
+                initialContent = textState.toMarkdown()
+            )
         }
     }
 }
