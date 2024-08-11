@@ -37,10 +37,6 @@ class MainActivity : ComponentActivity() {
                         isBottomBarVisible.value = true
                     }
 
-                    AskAI.toString().substringAfterLast(".").substringBefore("@") -> {
-                        isBottomBarVisible.value = true
-                    }
-
                     CreateNote.toString().substringAfterLast(".").substringBefore("@") -> {
                         isBottomBarVisible.value = true
                     }

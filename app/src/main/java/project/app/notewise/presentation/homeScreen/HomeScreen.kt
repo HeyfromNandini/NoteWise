@@ -92,7 +92,7 @@ fun HomeScreen(
     var searchQuery by remember { mutableStateOf("") }
     var filterBottomSheetOpen by remember { mutableStateOf(false) }
     var isFilterApplied by remember { mutableStateOf(false) }
-    val categories = listOf("Category1", "Category2") // Define your categories
+    var categories = listOf("") // Define your categories
     val priorities = listOf("High", "Medium", "Low") // Define your priorities
 
     val userInfo by viewModel.userInfo.collectAsState(initial = listOf())
@@ -114,6 +114,9 @@ fun HomeScreen(
                 it.uId == tempLocalId
             }?.sortedByDescending { it.timestamp }
             backUpUserNotes = userNotes
+            categories =
+                userNotes?.filter { it.category.isNotEmpty() }?.map { it.category }?.distinct()
+                    ?: emptyList()
             println("User notes: $userNotes")
         }
     }
@@ -123,11 +126,11 @@ fun HomeScreen(
             isFilterApplied = true
             filteredNotes = userNotes?.filter {
                 it.title.contains(searchQuery, ignoreCase = true) ||
-                it.content.contains(searchQuery, ignoreCase = true) ||
-                it.category.contains(searchQuery, ignoreCase = true) ||
-                it.priority.contains(searchQuery, ignoreCase = true) ||
-                it.tags.any { tag -> tag.contains(searchQuery, ignoreCase = true) } ||
-                formatTimestamp(it.timestamp).contains(searchQuery, ignoreCase = true)
+                        it.content.contains(searchQuery, ignoreCase = true) ||
+                        it.category.contains(searchQuery, ignoreCase = true) ||
+                        it.priority.contains(searchQuery, ignoreCase = true) ||
+                        it.tags.any { tag -> tag.contains(searchQuery, ignoreCase = true) } ||
+                        formatTimestamp(it.timestamp).contains(searchQuery, ignoreCase = true)
             }
         } else {
             isFilterApplied = false
@@ -187,9 +190,13 @@ fun HomeScreen(
                 },
                 shape = RoundedCornerShape(40.dp),
 
-            )
+                )
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(
+                    bottom = paddingValues.calculateBottomPadding() + 50.dp
+                )
+            ) {
                 items(
                     if (isFilterApplied) filteredNotes ?: emptyList() else userNotes ?: emptyList()
                 ) { note ->

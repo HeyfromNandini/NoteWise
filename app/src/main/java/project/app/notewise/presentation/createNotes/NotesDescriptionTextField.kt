@@ -2,9 +2,11 @@ package project.app.notewise.presentation.createNotes
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,35 +52,36 @@ fun NoteDescriptionField(
                 }
             }
     }
-
-    RichTextEditor(
-        state = textState,
-        colors = RichTextEditorDefaults.richTextEditorColors(
-            textColor = MaterialTheme.colorScheme.onPrimary,
-            cursorColor = MaterialTheme.colorScheme.primary,
-            containerColor = MaterialTheme.colorScheme.background,
-        ),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .focusRequester(focusRequester)
-            .onFocusChanged { focusState ->
-                isFocused.value = focusState.isFocused
+    SelectionContainer {
+        RichTextEditor(
+            state = textState,
+            colors = RichTextEditorDefaults.richTextEditorColors(
+                textColor = MaterialTheme.colorScheme.onPrimary,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    isFocused.value = focusState.isFocused
+                },
+            placeholder = {
+                Text("Enter note description...")
             },
-        placeholder = {
-            Text("Enter note description...")
-        },
-        textStyle = TextStyle(
-            fontSize = 16.sp
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                // Handle done action
-            }
-        ),
-        maxLines = Int.MAX_VALUE,
-        minLines = 200
-    )
+            textStyle = TextStyle(
+                fontSize = 16.sp
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    // Handle done action
+                }
+            ),
+            maxLines = Int.MAX_VALUE,
+            minLines = 200,
+        )
+    }
 }
 
 @Composable
@@ -92,10 +95,12 @@ fun NoteTitleField(
         onValueChange = { newText ->
             onTitleChange(newText)
         },
-        placeholder = { Text(
-            "Enter note Title...",
-            fontSize = 18.sp
-        ) },
+        placeholder = {
+            Text(
+                "Enter note Title...",
+                fontSize = 18.sp
+            )
+        },
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),

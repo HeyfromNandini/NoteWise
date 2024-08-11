@@ -25,3 +25,6 @@ object Profile
 
 @Serializable
 object SignUp
+
+@Serializable
+object Splash

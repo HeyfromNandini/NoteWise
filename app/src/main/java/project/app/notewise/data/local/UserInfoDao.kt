@@ -13,4 +13,7 @@ interface UserInfoDao {
 
     @Query("SELECT * FROM user_info")
     fun getUserInfo(): Flow<List<UserInfoEntity>>
+
+    @Query("DELETE FROM user_info")
+    suspend fun deleteAll()
 }

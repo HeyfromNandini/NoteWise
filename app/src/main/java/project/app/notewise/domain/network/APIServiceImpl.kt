@@ -100,7 +100,7 @@ class ApiServiceImpl(
         createNoteRequest: CreateNoteRequest,
         idToken: String
     ): Result<ErrorResponse> {
-        return safeApiCall(
+        return authenticatedApiCall(
             apiCall = {
                 println("Is loading1 $idToken")
                 client.post {
@@ -114,6 +114,10 @@ class ApiServiceImpl(
             },
             parseResponse = {
                 it.body<ErrorResponse>()
+            },
+            idToken = idToken,
+            onUnauthorized = {
+
             }
         )
     }
