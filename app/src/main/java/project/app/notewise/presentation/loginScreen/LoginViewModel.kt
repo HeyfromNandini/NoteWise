@@ -8,16 +8,22 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import project.app.notewise.data.ErrorResponse
+import project.app.notewise.data.local.UserInfoEntity
 import project.app.notewise.data.login.SignInResponse
 import project.app.notewise.data.login.SignUpRequest
 import project.app.notewise.data.login.VerifyEmailRequest
+import project.app.notewise.data.repository.DatabaseRepo
+import project.app.notewise.domain.datastore.UserDatastore
 import project.app.notewise.domain.network.ApiService
 import java.io.IOException
 import javax.inject.Inject
@@ -33,7 +39,9 @@ sealed class AuthState {
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val apiService: ApiService
+    private val userDatastore: UserDatastore,
+    private val apiService: ApiService,
+    private val databaseRepo: DatabaseRepo
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -56,9 +64,33 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = apiService.signIn(email, password)
             _authState.value = result.fold(
-                onSuccess = { AuthState.Success(it) },
+                onSuccess = {
+                    withContext(Dispatchers.IO) {
+                        saveUserDetailsToDataStore(it, email, password)
+                    }
+                    AuthState.Success(it)
+                },
                 onFailure = { handleApiError(it) }
             )
+        }
+    }
+
+    private fun saveUserDetailsToDataStore(signInResponse: SignInResponse, email: String, password: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                databaseRepo.insertUserInfo(
+                    UserInfoEntity(
+                        email = email,
+                        idToken = signInResponse.idToken ?: "",
+                        localId = signInResponse.userId ?: "",
+                        password = password,
+                        userName = ""
+                    )
+                )
+                userDatastore.saveIsLoggedIn(true)
+            }
+            println("Value is10 ${userDatastore.getIdToken.first()}")
+            println("Value is10 ${userDatastore.getLocalId.first()}")
         }
     }
 
@@ -107,7 +139,6 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun handleApiError(throwable: Throwable): AuthState.Error {
-        // Map throwable to ErrorResponse
         val errorResponse = when (throwable) {
             is IOException -> ErrorResponse(
                 error = null,

@@ -89,6 +89,7 @@ dependencies {
     implementation("io.ktor:ktor-client-android:1.6.4")
     implementation("io.ktor:ktor-client-serialization:2.3.2")
     implementation("io.ktor:ktor-client-logging-jvm:2.3.2")
+    implementation("io.ktor:ktor-client-auth:2.3.2")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 //    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     implementation("io.ktor:ktor-client-gson:2.3.2")

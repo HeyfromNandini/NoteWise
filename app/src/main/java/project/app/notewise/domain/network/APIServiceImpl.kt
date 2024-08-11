@@ -4,16 +4,18 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import project.app.notewise.data.ErrorResponse
 import project.app.notewise.data.login.SignInResponse
 import project.app.notewise.data.login.SignUpRequest
 import project.app.notewise.data.login.VerifyEmailRequest
 import project.app.notewise.data.login.VerifyEmailResponse
+import project.app.notewise.data.search.SearchRequest
+import project.app.notewise.data.search.SearchResponse
 import project.app.notewise.domain.Constants
 
 class ApiServiceImpl(
@@ -48,7 +50,10 @@ class ApiServiceImpl(
         )
     }
 
-    override suspend fun verifyEmail(verifyEmailRequest: VerifyEmailRequest, email: String): Result<VerifyEmailResponse> {
+    override suspend fun verifyEmail(
+        verifyEmailRequest: VerifyEmailRequest,
+        email: String
+    ): Result<VerifyEmailResponse> {
         return safeApiCall(
             apiCall = {
                 client.post {
@@ -59,6 +64,29 @@ class ApiServiceImpl(
             },
             parseResponse = {
                 it.body<VerifyEmailResponse>()
+            }
+        )
+    }
+
+    override suspend fun aiChat(searchRequest: SearchRequest, idToken: String): Result<SearchResponse> {
+        return authenticatedApiCall(
+            apiCall = {
+                println("idToken is $idToken")
+                client.post {
+                    url("${Constants.API.BASE_URL}/searchNote")
+                    header(HttpHeaders.ContentType, ContentType.Application.Json)
+                    setBody(searchRequest)
+                    headers {
+                        append("Authorization", "Bearer $idToken")
+                    }
+                }
+            },
+            parseResponse = {
+                it.body<SearchResponse>()
+            },
+            idToken = idToken,
+            onUnauthorized = {
+
             }
         )
     }

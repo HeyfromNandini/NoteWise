@@ -5,19 +5,19 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
+import io.ktor.client.request.headers
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.readText
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.headers
 import io.ktor.utils.io.errors.IOException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import project.app.notewise.data.ErrorResponse
-
-sealed class ApiResult<out T> {
-    data class Success<out T>(val data: T) : ApiResult<T>()
-    data class Error(val error: ErrorResponse) : ApiResult<Nothing>()
-}
+import project.app.notewise.data.login.SignInResponse
+import project.app.notewise.data.login.SignUpRequest
 
 suspend fun <T> safeApiCall(
     apiCall: suspend () -> HttpResponse,
@@ -41,10 +41,43 @@ suspend fun <T> safeApiCall(
     }
 }
 
+suspend fun <T> authenticatedApiCall(
+    idToken: String,
+    apiCall: suspend () -> HttpResponse,
+    onUnauthorized: suspend () -> Unit,
+    parseResponse: suspend (HttpResponse) -> T
+): Result<T> {
+    return try {
+        val response = apiCall().apply {
+            headers {
+                append("Authorization", "Bearer $idToken")
+            }
+        }
+        when (response.status) {
+            HttpStatusCode.OK -> {
+                val body = parseResponse(response)
+                Result.success(body)
+            }
+            HttpStatusCode.Unauthorized -> {
+                // Handle token expiration or unauthorized access
+                onUnauthorized()
+                val errorResponse = parseError(response)
+                Result.failure(Throwable("Unauthorized: ${errorResponse.message}"))
+            }
+            else -> {
+                val errorResponse = parseError(response)
+                Result.failure(Throwable(errorResponse.message))
+            }
+        }
+    } catch (e: Exception) {
+        Result.failure(mapToThrowable(e))
+    }
+}
+
 private suspend fun parseError(response: HttpResponse): ErrorResponse {
     return try {
         val errorBody = response.bodyAsText()
-        println("Responnse is $errorBody")
+        println("Response is $errorBody")
         Json.decodeFromString<ErrorResponse>(errorBody)
     } catch (e: Exception) {
         ErrorResponse(
