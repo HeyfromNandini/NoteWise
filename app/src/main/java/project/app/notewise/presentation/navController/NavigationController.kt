@@ -67,7 +67,12 @@ fun NavigationController(
         }
 
         composable<Home> {
-            HomeScreen(viewModel = homeViewModel, paddingValues = paddingValues)
+            HomeScreen(
+                viewModel = homeViewModel,
+                paddingValues = paddingValues,
+                createNotesViewModel = createNotesViewModel,
+                navController = navHostController
+            )
         }
 
         composable<CreateNote> {

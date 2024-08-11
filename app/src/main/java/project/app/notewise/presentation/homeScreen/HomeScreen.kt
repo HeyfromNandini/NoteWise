@@ -62,13 +62,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.jet.firestore.JetFirestore
 import com.jet.firestore.getListOfObjects
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 import project.app.notewise.R
+import project.app.notewise.domain.models.CreateNote
 import project.app.notewise.domain.models.UserNotes
+import project.app.notewise.presentation.createNotes.CreateNotesViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -78,7 +81,9 @@ import java.util.Locale
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
+    navController: NavHostController,
     viewModel: HomeViewModel,
+    createNotesViewModel: CreateNotesViewModel,
     paddingValues: PaddingValues
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
@@ -204,7 +209,11 @@ fun HomeScreen(
                         title = note.title,
                         description = note.content,
                         timeStamp = formatTimestamp(note.timestamp)
-                    )
+                    ) {
+                        createNotesViewModel.title = note.title
+                        createNotesViewModel.content = note.content
+                        navController.navigate(CreateNote)
+                    }
                 }
             }
         }

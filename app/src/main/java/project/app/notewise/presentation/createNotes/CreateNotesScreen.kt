@@ -61,6 +61,10 @@ fun CreateNoteScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit, viewModel.content) {
+        textState.setMarkdown(viewModel.content)
+    }
+
     LaunchedEffect(createNoteState) {
         when (createNoteState) {
             is CreateNoteState.Success -> {

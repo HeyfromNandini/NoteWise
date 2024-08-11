@@ -71,7 +71,11 @@ fun NoteDescriptionField(
                 Text("Enter note description...")
             },
             textStyle = TextStyle(
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                lineHeight = 31.sp,
+                letterSpacing = 0.5.sp,
+
+
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
@@ -80,6 +84,7 @@ fun NoteDescriptionField(
             ),
             maxLines = Int.MAX_VALUE,
             minLines = 200,
+
         )
     }
 }

@@ -51,6 +51,7 @@ class CreateNotesViewModel @Inject constructor(
 
     var currentIcon by mutableStateOf(formattingIcons[0])
     var title by mutableStateOf("")
+    var content by mutableStateOf("")
     val isDescriptionFocused = mutableStateOf(false)
     val isBottomSheetVisible = mutableStateOf(false)
 
