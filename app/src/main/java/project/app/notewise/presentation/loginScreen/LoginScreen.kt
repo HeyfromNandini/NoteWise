@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import project.app.notewise.baseUI.theme.utils.ErrorHandler
 import project.app.notewise.baseUI.theme.utils.TextFieldWithIcons
+import project.app.notewise.domain.models.Home
 import project.app.notewise.domain.models.SignUp
 import kotlin.math.log
 
@@ -45,9 +46,10 @@ fun LoginScreen(
         when (authState) {
             is AuthState.Success -> {
                 errorMessage = "Login Success"
-                delay(500)
+                delay(1000)
                 errorMessage = "We're setting up things for you"
-                onLoginSuccess()
+                navController.popBackStack()
+                navController.navigate(Home)
             }
 
             is AuthState.Error -> {
