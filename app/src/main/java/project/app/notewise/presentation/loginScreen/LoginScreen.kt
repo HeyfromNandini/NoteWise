@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
 import project.app.notewise.baseUI.theme.utils.ErrorHandler
 import project.app.notewise.baseUI.theme.utils.TextFieldWithIcons
 import project.app.notewise.domain.models.SignUp
@@ -43,6 +44,9 @@ fun LoginScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
+                errorMessage = "Login Success"
+                delay(500)
+                errorMessage = "We're setting up things for you"
                 onLoginSuccess()
             }
 
