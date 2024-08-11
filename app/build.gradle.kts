@@ -4,6 +4,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
     id("kotlinx-serialization")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -120,5 +121,13 @@ dependencies {
 
     // Collapsing Toolbar
     implementation("me.onebone:toolbar-compose:2.3.5")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
+
+
+    // JetFiresStore
+    implementation("com.github.raipankaj:JetFireStore:1.0.2")
 
 }

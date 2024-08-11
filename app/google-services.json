@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "424864482973",
+    "project_id": "gemini-notes-app",
+    "storage_bucket": "gemini-notes-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424864482973:android:f6164ef4d5d490e794f674",
+        "android_client_info": {
+          "package_name": "project.app.notewise"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6gm7QjTl89iA0BbZ5dt1rAK-hAQJTJOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

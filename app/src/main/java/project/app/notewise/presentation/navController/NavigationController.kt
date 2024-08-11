@@ -29,6 +29,8 @@ import project.app.notewise.domain.models.Search
 import project.app.notewise.domain.models.SignUp
 import project.app.notewise.presentation.aiChat.AIChatViewModel
 import project.app.notewise.presentation.createNotes.CreateNoteScreen
+import project.app.notewise.presentation.homeScreen.HomeScreen
+import project.app.notewise.presentation.homeScreen.HomeViewModel
 import project.app.notewise.presentation.loginScreen.LoginScreen
 import project.app.notewise.presentation.loginScreen.LoginViewModel
 import project.app.notewise.presentation.loginScreen.SignUpScreen
@@ -42,6 +44,7 @@ fun NavigationController(
 ) {
     val loginViewModel = hiltViewModel<LoginViewModel>()
     val aiChatViewModel = hiltViewModel<AIChatViewModel>()
+    val homeViewModel = hiltViewModel<HomeViewModel>()
     val context = LocalContext.current
     val datastore = UserDatastore(context)
     val isLoggedIn = datastore.getIsLoggedIn.collectAsState(initial = false)
@@ -56,9 +59,7 @@ fun NavigationController(
 
     NavHost(navHostController, startDestination = if (isLoggedIn.value) Home else Login) {
         composable<Home> {
-            Column {
-                Text("Home")
-            }
+            HomeScreen(viewModel = homeViewModel, paddingValues = paddingValues)
         }
 
         composable<CreateNote> {
