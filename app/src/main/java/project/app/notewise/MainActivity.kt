@@ -9,11 +9,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import project.app.notewise.baseUI.theme.bottomBar.BottomBar
 import project.app.notewise.baseUI.theme.ui.NoteWiseTheme
-import project.app.notewise.domain.Screens
+import project.app.notewise.domain.models.AskAI
+import project.app.notewise.domain.models.CreateNote
+import project.app.notewise.domain.models.Home
+import project.app.notewise.domain.models.Search
 import project.app.notewise.presentation.navController.NavigationController
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,17 +26,18 @@ class MainActivity : ComponentActivity() {
             NoteWiseTheme {
                 val isBottomBarVisible = remember { mutableStateOf(true) }
                 val navController = rememberNavController()
+                // Get the current back stack entry
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                when (navBackStackEntry?.destination?.route) {
-                    Screens.Home.route -> {
+                when (navBackStackEntry?.destination?.route?.substringAfterLast(".")) {
+                    Home.toString().substringAfterLast(".").substringBefore("@") -> {
                         isBottomBarVisible.value = true
                     }
 
-                    Screens.CreateNotes.route -> {
-                        isBottomBarVisible.value = false
+                    AskAI.toString().substringAfterLast(".").substringBefore("@") -> {
+                        isBottomBarVisible.value = true
                     }
 
-                    Screens.Search.route -> {
+                    CreateNote.toString().substringAfterLast(".").substringBefore("@") -> {
                         isBottomBarVisible.value = true
                     }
 

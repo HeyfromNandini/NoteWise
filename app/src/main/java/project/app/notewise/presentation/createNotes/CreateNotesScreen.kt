@@ -37,7 +37,7 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
-import project.app.notewise.domain.formattingIcons
+import project.app.notewise.domain.models.formattingIcons
 
 
 @Composable
