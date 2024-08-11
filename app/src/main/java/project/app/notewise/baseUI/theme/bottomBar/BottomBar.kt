@@ -6,7 +6,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,7 +22,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import project.app.notewise.domain.items
+import project.app.notewise.domain.models.BottomBarScreens
+import project.app.notewise.domain.models.items
 
 @Composable
 fun BottomBar(navController: NavController, isBottomBarVisible: MutableState<Boolean>) {
@@ -50,9 +50,7 @@ fun BottomBar(navController: NavController, isBottomBarVisible: MutableState<Boo
                 tonalElevation = 10.dp,
             ) {
                 items.forEach {
-                    val selected = currentRoute?.hierarchy?.any { nav ->
-                        nav.route == it.route
-                    } == true
+                    val selected = isSelectedRoute(currentRoute?.route, it)
                     NavigationBarItem(
                         icon = {
                             AnimatedIcon(
@@ -60,27 +58,23 @@ fun BottomBar(navController: NavController, isBottomBarVisible: MutableState<Boo
                                 scale = if (selected) 1.2f else 1.2f,
                                 color = MaterialTheme.colorScheme.onPrimary,
                             ) {
-                                it.route?.let { it1 ->
-                                    navController.navigate(it1) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                }
-                            }
-                        },
-                        selected = selected,
-                        onClick = {
-                            it.route?.let { it1 ->
-                                navController.navigate(it1) {
+                                navController.navigate(it.t as Any) {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
+                            }
+                        },
+                        selected = selected,
+                        onClick = {
+                            navController.navigate(it.t as Any) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
                         },
                         colors = NavigationBarItemDefaults.colors(
@@ -93,4 +87,12 @@ fun BottomBar(navController: NavController, isBottomBarVisible: MutableState<Boo
             }
         }
     }
+}
+
+fun isSelectedRoute(
+    currentRoute: String?,
+    screen: BottomBarScreens
+): Boolean {
+    val routeClassName = currentRoute?.substringAfterLast(".") ?: ""
+    return routeClassName == screen.t?.toString()?.substringAfterLast(".")?.substringBefore("@")
 }

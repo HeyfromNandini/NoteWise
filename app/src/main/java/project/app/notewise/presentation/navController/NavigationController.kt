@@ -2,15 +2,26 @@ package project.app.notewise.presentation.navController
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import project.app.notewise.domain.Screens
+import project.app.notewise.domain.models.AskAI
+import project.app.notewise.domain.models.CreateNote
+import project.app.notewise.domain.models.Home
+import project.app.notewise.domain.models.Login
+import project.app.notewise.domain.models.Onboarding
+import project.app.notewise.domain.models.Profile
+import project.app.notewise.domain.models.Search
+import project.app.notewise.domain.models.SignUp
 import project.app.notewise.presentation.createNotes.CreateNoteScreen
+import project.app.notewise.presentation.loginScreen.LoginScreen
+import project.app.notewise.presentation.loginScreen.LoginViewModel
+import project.app.notewise.presentation.loginScreen.SignUpScreen
+import project.app.notewise.presentation.loginScreen.WOnBoardingScreen
 
 @Composable
 fun NavigationController(
@@ -18,25 +29,56 @@ fun NavigationController(
     paddingValues: PaddingValues,
     isBottomBarVisible: MutableState<Boolean>
 ) {
-    NavHost(navController = navHostController, startDestination = Screens.Home.route) {
-        composable(Screens.Home.route) {
+    val loginViewModel = hiltViewModel<LoginViewModel>()
+
+    NavHost(navHostController, startDestination = Login) {
+        composable<Home> {
             Column {
                 Text("Home")
             }
         }
-        composable(Screens.CreateNotes.route) {
+
+        composable<CreateNote> {
             CreateNoteScreen(paddingValues = paddingValues)
         }
-        composable(Screens.AskAI.route) {
+
+        composable<AskAI> {
             Column {
                 Text("Ask AI")
             }
         }
 
-        composable(Screens.Search.route) {
+        composable<Search> {
             Column {
                 Text("Search")
             }
         }
+
+        composable<Onboarding> {
+            WOnBoardingScreen(paddingValues = paddingValues, navHostController = navHostController)
+        }
+
+        composable<Login> {
+            LoginScreen(
+                loginViewModel = loginViewModel,
+                navController = navHostController,
+                onLoginSuccess = {
+                    navHostController.navigate(Home)
+                }
+            )
+        }
+
+        composable<Profile> {
+            Column {
+                Text("Profile")
+            }
+        }
+
+        composable<SignUp> {
+            SignUpScreen(viewModel = loginViewModel) {
+                navHostController.navigate(Login)
+            }
+        }
     }
 }
+
