@@ -1,5 +1,7 @@
 package project.app.notewise.domain.network
 
+import project.app.notewise.data.ErrorResponse
+import project.app.notewise.data.createNote.CreateNoteRequest
 import project.app.notewise.data.login.SignInResponse
 import project.app.notewise.data.login.SignUpRequest
 import project.app.notewise.data.login.VerifyEmailRequest
@@ -16,5 +18,7 @@ interface ApiService {
     ): Result<VerifyEmailResponse>
 
     suspend fun aiChat(searchRequest: SearchRequest, idToken: String): Result<SearchResponse>
+
+    suspend fun createNote(createNoteRequest: CreateNoteRequest, idToken: String): Result<ErrorResponse>
 
 }

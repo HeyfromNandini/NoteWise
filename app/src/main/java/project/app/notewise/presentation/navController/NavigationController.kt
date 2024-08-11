@@ -29,6 +29,7 @@ import project.app.notewise.domain.models.Search
 import project.app.notewise.domain.models.SignUp
 import project.app.notewise.presentation.aiChat.AIChatViewModel
 import project.app.notewise.presentation.createNotes.CreateNoteScreen
+import project.app.notewise.presentation.createNotes.CreateNotesViewModel
 import project.app.notewise.presentation.homeScreen.HomeScreen
 import project.app.notewise.presentation.homeScreen.HomeViewModel
 import project.app.notewise.presentation.loginScreen.LoginScreen
@@ -38,6 +39,7 @@ import project.app.notewise.presentation.loginScreen.WOnBoardingScreen
 
 @Composable
 fun NavigationController(
+    createNotesViewModel: CreateNotesViewModel,
     navHostController: NavHostController,
     paddingValues: PaddingValues,
     isBottomBarVisible: MutableState<Boolean>
@@ -63,7 +65,7 @@ fun NavigationController(
         }
 
         composable<CreateNote> {
-            CreateNoteScreen(paddingValues = paddingValues)
+            CreateNoteScreen(paddingValues = paddingValues, createNotesViewModel)
         }
 
         composable<AskAI> {
