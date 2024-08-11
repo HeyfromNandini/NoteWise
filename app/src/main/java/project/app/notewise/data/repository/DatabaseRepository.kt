@@ -10,4 +10,8 @@ class DatabaseRepo(private val userInfoDao: UserInfoDao) {
     }
 
     val userInfo: Flow<List<UserInfoEntity?>> = userInfoDao.getUserInfo()
+
+    suspend fun deleteAll() {
+        userInfoDao.deleteAll()
+    }
 }

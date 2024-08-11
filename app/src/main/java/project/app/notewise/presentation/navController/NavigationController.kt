@@ -2,7 +2,6 @@ package project.app.notewise.presentation.navController
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +26,9 @@ import project.app.notewise.domain.models.Onboarding
 import project.app.notewise.domain.models.Profile
 import project.app.notewise.domain.models.Search
 import project.app.notewise.domain.models.SignUp
+import project.app.notewise.domain.models.Splash
 import project.app.notewise.presentation.aiChat.AIChatViewModel
+import project.app.notewise.presentation.aiChat.ChatsScreen
 import project.app.notewise.presentation.createNotes.CreateNoteScreen
 import project.app.notewise.presentation.createNotes.CreateNotesViewModel
 import project.app.notewise.presentation.homeScreen.HomeScreen
@@ -47,9 +48,9 @@ fun NavigationController(
     val loginViewModel = hiltViewModel<LoginViewModel>()
     val aiChatViewModel = hiltViewModel<AIChatViewModel>()
     val homeViewModel = hiltViewModel<HomeViewModel>()
+    val splashViewModel = hiltViewModel<SplashViewModel>()
     val context = LocalContext.current
     val datastore = UserDatastore(context)
-    val isLoggedIn = datastore.getIsLoggedIn.collectAsState(initial = false)
     var idToken by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -59,7 +60,12 @@ fun NavigationController(
         }
     }
 
-    NavHost(navHostController, startDestination = if (isLoggedIn.value) Home else Login) {
+    NavHost(navHostController, startDestination = Splash) {
+
+        composable<Splash> {
+            SplashScreen(viewModel = splashViewModel, navHostController = navHostController)
+        }
+
         composable<Home> {
             HomeScreen(viewModel = homeViewModel, paddingValues = paddingValues)
         }
@@ -69,13 +75,11 @@ fun NavigationController(
         }
 
         composable<AskAI> {
-            Column {
-                Button(onClick = {
-                    aiChatViewModel.searchNotes()
-                }) {
-                    Text("Ask AI")
-                }
-            }
+            ChatsScreen(
+                viewModel = aiChatViewModel,
+                paddingValues = paddingValues,
+                navHostController
+            )
         }
 
         composable<Search> {
